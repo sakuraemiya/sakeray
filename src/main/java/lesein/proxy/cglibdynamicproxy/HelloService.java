@@ -13,7 +13,7 @@ public class HelloService {
     /**
      * final修饰的方法不能被代理
      */
-    final public void sayBye(){
+    public final void sayBye(){
         System.out.println("sayBye");
     }
 
