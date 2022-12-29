@@ -91,22 +91,31 @@
         + kafka是以副本的维度管理数据的，管理者就是broker，它会将同一份数据的不同副本调度到不同的机器上，并且会在副本不足时生成新的副本，保证在部分broker宕机后也能保证数据不丢失，所有的broker之间也会做一些元数据的相互同步。
 + 消息重复消费，可以使用幂等解决，判断当前消息是否已经被执行。
 #### 集合
-+ java8之前使用头插法，java8之后使用尾插法。数据多次插入后，到达一定的数量会进行扩容resize，当数据量/容量达到负载因子（0.75）时就需要扩容，扩容会首先创建一个新的空数组，长度时原来的二倍，然后遍历原来的数据重新hash到添加进去，因为长度变化hash的规则也变了（
- index = HashCode（Key） & （Length - 1）），使用头插法在多个线程调度的情况下可能会出现环。
- + 集合的线程不安全问题
-    + 多线程添加元素下的报错java.util.concurrentModificationException（并发修改异常）
-        + 使用Vector代替ArrayList解决问题，Vector的add方法有Synchronized修饰
-        + 使用Collections.synchronizedList(new ArrayList<>());
-        + 使用new CopyOnWriteArrayList();
-    + HashSet底层是HashMap，new HashSet<>().add("a")调用的是map.put;HashSet添加元素只添加一个元素key，它的value值是固定的是一个名为persent的Object常量
++ java8之前使用头插法，java8之后使用尾插法。数据多次插入后，到达一定的数量会进行扩容resize，当数据量/容量达到负载因子（0.75）时就需要扩容，扩容会首先创建一个新的空数组，长度时原来的二倍，然后遍历原来的数据重新hash到添加进去，因为长度变化hash的规则也变了（index = HashCode（Key） & （Length - 1）），使用头插法在多个线程调度的情况下可能会出现环。
++ 集合的线程不安全问题
+   + 多线程添加元素下的报错java.util.concurrentModificationException（并发修改异常）
+       + 使用Vector代替ArrayList解决问题，Vector的add方法有Synchronized修饰
+       + 使用Collections.synchronizedList(new ArrayList<>());
+       + 使用new CopyOnWriteArrayList();
+   + HashSet底层是HashMap，new HashSet<>().add("a")调用的是map.put;HashSet添加元素只添加一个元素key，它的value值是固定的是一个名为present的Object常量
  
- + List集合
-    + 使用Arrays.asList()，返回的并不java.util.ArrayList，而是Arrays的一个内部类，并且增删使用的是父类的方法，无论是修改原数组还是新的List集合两者都会相互影响。
-    + subList方法实际上还在引用原来的List
-    + 通过Collections#unmodifiableList产生的不可变集合仍然会被原来的List影响
-    + modCount用来记录List集合修改的次数，开始遍历时，expectedModCount==modCount，ArrayList#remove 之后将会使 modCount 加一，导致两者不相等，迭代器在遍历时会抛错，使用iterator#remove或list#removeIf。
++ List集合
+   + 使用Arrays.asList()，返回的并不java.util.ArrayList，而是Arrays的一个内部类，并且增删使用的是父类的方法，无论是修改原数组还是新的List集合两者都会相互影响。
+   + subList方法实际上还在引用原来的List
+   + 通过Collections#unmodifiableList产生的不可变集合仍然会被原来的List影响
+   + modCount用来记录List集合修改的次数，开始遍历时，expectedModCount==modCount，ArrayList#remove 之后将会使 modCount 加一，导致两者不相等，迭代器在遍历时会抛错，使用iterator#remove或list#removeIf。
 
-+ 使用HashMap的时候，用String作key，字符串是不可变的，当创建字符串时，它的hashcode被缓存下载，不需要再次计算。相比于以他对象更快。
++ 使用HashMap的时候，用String作key，字符串是不可变的，当创建字符串时，它的hashcode被缓存下载，不需要再次计算。相比于其他对象更快。
++ HashMap,HashTable,ConcurrentHashMap
+    + HashTable是一个线程安全的类，它使用synchronized来锁住整张Hash表实现线程安全，JDK1.7的concurrentHashMap内部使用segment（内含HashEntry链表数组）来表示不同的地方，对每一个segment进行加锁，JDK1.8降低了锁的粒度，对首节点进行加锁
+    + ![concurrentHashMap](./image/concurrentHashMap.png "concurrentHashMap")
+        + concurrentHashMap定位一个元素需要两次hash操作，第一次hash定位到segment，第二次hash定位到所在链表的头部，虽然相比普通的hashmap，hash的过程更长，但是带来的好处是写操作的时候只对元素所在的segment进行操作，并且不会锁住整个容器，不会影响其他segment，提高了并发能力
+        + 1.7 版本锁定segment，不允许对其进行非查询操作，1.8 版本采用CAS无锁算法，减小了锁的颗粒度，对并发操作提供了良好的优化
+        + 1.8 版本数据结构更加简单，使用synchronized来进行同步，也不需要分段锁的概念和segment这种数据结构，由于粒度的降低，复杂性也增加了
+        + 1.8 使用红黑树来优化链表，代替一定阈值的链表，提高了遍历效率
+    + 使用final修饰变量确保了初始化的安全性，让不可变对象不需要同步就能被访问和共享；使用volatile修饰确保变量的修改对其他线程可见，配合CAS实现不加锁的并发操作，get可以无锁操作是由于Node节点的val和next都是由volatile修饰，在多线程环境下其他线程的新增修改都是可见的。
+    + concurrentHashMap设计为非阻塞，在更新时会局部锁住某部分数据，读取操作则是完全非阻塞，好处是正常的同步前提下，效率很高。坏处是读取操作并不能保证获取到最新的数据，当线程A大量的put数据，在此期间线程B读取数据，只能获取到目前为止已经顺利插入的部分数据
+   
  #### Redis
  + Redis是基于内存的采用单进程单线程的KV数据库。
      + 完全基于内存，非常快速，类似与HashMap
@@ -133,7 +142,20 @@
      + 根据字符串的长度及元素的个数适配不同的编码格式。
 
 + Redis持久化方式
-    + RDB，利用快照的方式记录redis数据库中所有的键值对，在某个时间点将数据写入一个临时文件，持久化结束后，用这个临时文件替换上次持久化文件。
+    + RDB，利用快照的方式记录redis数据库中所有的键值对，在某个时间点将数据写入一个临时文件，持久化结束后，用这个临时文件替换上次持久化文件。可用于在发生故障或重新启动时恢复数据存储。
+    + AOF，对Redis数据存储执行的所有写入操作的日志。AOF是通过在Redis服务器接收到每个写操作时将其存储在磁盘上的日志文件中来创建的。它可用于在发生故障或重新启动时重建数据存储。
+    
++ redis主从复制的过程
+    + 从属Redis服务器向主服务器发送同步请求，要求其发送数据存储的副本。
+    + 主机通过以Redis命令流的形式向从机发送数据存储的副本来进行响应。
+    + 从设备接收命令流并执行它们，从而更新自己的数据存储以匹配主设备的数据存储。
+    + 从设备还向主设备发送确认，表明其已成功接收并执行命令。
+    + 一旦完全同步复制过程完成，从设备就开始从主设备实时接收更新，就像主设备接收更新一样。
+    
++ redis哨兵机制的作用
+    + 监控：哨兵会不断检查主服务器和从服务器是否正常运行
+    + 通知：当被监控的某个redis服务器出现问题，哨兵通过api脚本向管理员或者其他的应用程序发送通知
+    + 自动故障转移：当主节点不能正常工作，它会将与失效主节点时主从关系的其中一个从节点升级为新的主节点，并且将其它从节点指向新的主节点
 
 
  #### MYSQL
@@ -188,7 +210,7 @@
     + mysql在处理子查询的时候，会将子查询改写，例如 select * from a where a.id in (select b.id from b where xxx)，mysql会扫描a表中的所有数据，每条数据会传到子查询中与b表关联
 20. 快照读和当前读
     + 快照读（read view）普通读的执行方式生成的都是快照读，直接通过mvcc机制进行读取，不会对记录进行加锁
-    + 当前读，读取的是最新版本的数据，select ... lock in share mode 、select ... for update、update 、delete 、insert都属于当前读
+    + 当前读，读取的是最新版本的数据，select ... lock in share mode 、select ... for update、update 、delete 、insert都属于当前读，会加锁，行锁和gap锁
 
 
 #### JVM
@@ -279,6 +301,7 @@
     + synchronized不需要手动释放锁，当代码执行完之后系统会自动让线程释放对锁的暂用。ReentrantLock则需要用户去手动释放锁，不然会出现死锁的现象，需要lock，unlock，try，catch语句块来完成
     + synchronized是不可中断的，除非抛出异常或程序正常运行完成。lock可中断。设置超时方法trylock；调用interrupt中断
     + 绑定多个条件Condition，Synchronized没有，ReentrantLock用来可以实现分组唤醒线程们，可以精确唤醒，而不是想synchronized那样只能唤醒一个或全部
+    + 在大多数情况下，Lock 类的性能要优于 synchronized 关键字,synchronized 关键字的实现是基于底层的对象监视器机制的，而这种机制会带来一些性能的损失
 + ReentrantLock内部定义了同步器Sync，在加锁的时候通过CAS算法，将线程对象放到一个双线链表中，每次获取锁的时候，检查当前维护的线程ID和当前请求的线程ID是否一致，如果一致同步状态加1。
 + ReentrantLock和synchronized
     + synchronized会自动释放锁，ReentrantLock需要手动释放锁
@@ -299,10 +322,25 @@
 
 + 分布式事务的解决方案
     + 2PC方案，事务的提交分为两个阶段，准备阶段和提交执行阶段。
+        + 简单易理解，开发容易
+        + 对资源进行了长时间的锁定，并发度低
+        + ![2pc](./image/2pc.png "2pc")
     + TCC，采用补偿机制，针对每个操作都要注册一个与其相对应的确认和补偿操作。
-    + 本地消息表，将分布式事务拆分成本地事务执行
-    + 最大努力通知，ack机制
+        + Try 阶段：尝试执行，完成所有业务检查（一致性）, 预留必须业务资源（准隔离性）
+        + Confirm 阶段：确认执行真正执行业务，不作任何业务检查，只使用 Try 阶段预留的业务资源，Confirm 操作要求具备幂等设计，Confirm 失败后需要进行重试。
+        + Cancel 阶段：取消执行，释放 Try 阶段预留的业务资源。Cancel 阶段的异常和 Confirm 阶段异常处理方案基本上一致，要求满足幂等设计。
+        + 并发度较高，无长期资源锁定。
+        + 开发量较大，需要提供Try/Confirm/Cancel接口。
+        + 一致性较好
+        + TCC适用于订单类业务，对中间状态有约束的业务
+        + ![tcc](./image/tcc.png "tcc")
     + saga事务，将长事务拆分成短事务，由saga事务协调器协调，如果正常结束那就正常完成，如果某个步骤失败，则根据相反的顺序调用补偿操作。
+        + 并发度高，不会长时间锁定资源
+        + 需要定义正常操作以及补偿操作，开发量大
+        + 一致性较弱，会发生第一个事务成功了，最后又失败的情况
+        + ![saga](./image/saga.png "saga")
+    + 本地消息表，将分布式事务拆分成本地事务并结合消息执行
+    + 最大努力通知，ack机制
 #### 分布式锁
 + 基于数据库实现
     + 新建一个包含方法名的表，并在这个字段上创建唯一索引，想要执行某一个方法就向表中插入一条数据，插入成功则获取锁，执行完成后删除数据释放锁，当有多个请求同时提交到数据库，则只有一个线程可以获取锁并执行
@@ -447,7 +485,7 @@ public class DataNode implements Record {    
 + 桥接(Bridge) 模式:将抽象与实现分离，使它们可以独立变化。它是用组合关系代替继承关系来实现，从而降低了抽象和实现这两个可变维度的耦合度。
 + 装饰(Decorator)模式:动态的给对象增加一些职责，即增加其额外的功能。
 + 外观(Facade) 模式:为多个复杂的子系统提供一一个- -致的接口，使这些子系统更加容易被访问。
-+ 享元(Flyweight)模式:运用共享技术来有效地支持大量细粒度对象的复用。
++ 享元(Flyweight)模式:运用共享技术来有效地支持大量细粒度对象的复用。Integer中的IntegerCache用的就是这种设计模式
 + 组合(Composite) 模式:将对象组合成树状层次结构，使用户对单个对象和组合对象具有一致的访问性。
 + 模板方法(TemplateMethod)模式:定义- -个操作中的算法骨架，而将算法的- -些步骤延迟到子类中，使得子类可以不改变该算法结构的情况下重定义该算法的某些特定步骤。
 + 策略(Strategy) 模式:定义了一-系列算法，并将每个算法封装起来，使它们可以相互替换，且算法的改变不会影响使用算法的客户。
@@ -460,6 +498,13 @@ public class DataNode implements Record {    
 + 访问者(visitor) 模式:在不改变集合元素的前提下，为一个集合中的每个元素提供多种访问方式，即每个元素有多个访问者对象访问。
 + 备忘录(Memento)模式:在不破坏封装性的前提下，获取并保存一个对象的内部状态，以便以后恢复它。
 + 解释器(Interpreter)模式:提供如何定义语言的文法，以及对语言句子的解释方法，即解释器
++ 设计模式六大原则
+    + 单一原则(Single Responsibility Principle): 一个类只负责一项职责,尽量做到类的只有一个行为原因引起变化;
+    + 里氏替换原则(LSP liskov substitution principle) :子类可以扩展父类的功能，但不能改变原有父类的功能;
+    + 依赖倒置原则( dependence inversion principle) :面向接口编程;
+    + 接口隔离(interface segregation principle) :建立单-接口;
+    + 迪米特原则(law of demeterLOD) :最少知道原则，尽量降低类与类之间的耦合;
+    + 开闭原则(open closed principle) :用抽象构建架构，用实现扩展原则; .
 
 
 
