@@ -157,6 +157,9 @@
        | 条件condition|  | 通过多个new condition获得多个condition对象，实现复杂线程同步功能 |
        | 适用情况 | 在资源竞争不激烈，偶尔会有同步的情况下，编译程序会对synchronized进行优化，可读性好 | 在竞争激烈的情况下，synchronized的性能会下降 |
        | 原理 | synchronized在编译时会在同步代码块前后生成monitorenter和monitorexit两个字节码命令，在执行monitorenter时，获取对象的锁，并把锁的计数加1，执行monitorexit会将计数减1，当计算为0时，锁就被释放了，如果获取对象锁失败，则会阻塞知道对象的锁释放 | 使用CAS+CLH队列，当线程试图获取锁，首先通过cas将锁的状态由0变为1，成功则直接获取锁，失败会将当前线程加入到队列同步器中等待，并使用自旋不断获取锁直到自旋次数达到设置的阈值，当线程释放锁时，会使用cas将1变为0，然后通知队列同步器唤醒队列。
+
+23. 说一说redis为什么这么快
+    + ![redis](./image/redis.png "redis")
        
     
 
