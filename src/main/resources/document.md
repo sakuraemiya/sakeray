@@ -8,7 +8,7 @@
 + 为什么String对象是不可变的
     1. String对象是通过数组存储，数组被final修饰。
     2. String对象缓存在String池中，由于缓存字符在多个客户端之间共享，因此存在风险
-    3. String对象允许缓存哈希码，并且每次调用String的hashcode不会重新计算
+    3. String对象允许缓存哈希码，并且每次调用String的hashcode不会重新计算pipeline
 + 为什么char数组比String更适合存储密码
     1. 由于字符串是不可变的，如果密码为纯文本，它将可以在内存中使用，知道垃圾收集器清除它，并且为了可重用，回存在String的常量池中，会保存在内存很长时间，从而构成威胁
     2. Java本身建议使用JPasswordField 的 getPassword()返回一个char而不推荐getText()方法返回明文数据。
@@ -367,17 +367,23 @@
     + 优点：具备高可用、可重入、阻塞锁特性，可解决失效死锁问题。
     + 缺点：因为需要频繁的创建和删除节点，性能上不如Redis方式。
 #### Dubbo
++ dubbo是什么？能做什么
+    + dubbo就是个服务框架，本质就是个远程服务调用的分布式框架
+    + 远程通讯：提供多种基于长连接的NIO框架抽象封装，包括多种线程模型，序列化，以及请求响应模式的信息交换方式。透明化远程方法调用，就像调用本地方法一样调用远程方法
+    + 集群容错：提供基于接口方法的透明远程过程调用，包括多协议支持，以及负载均衡，失败容错，地址路由，动态配置等集群支持
+    + 自动发现：基于注册中心目录服务，服务自动注册与发现，注册中心基于接口名查询服务提供者的ip地址，并且能平滑的添加或删除服务提供者 
+    
 + dubbo调用机制
     + 同步调用，客户端向远程服务器发送请求，直到服务器返回结果。客户端线程发送给服务端时，有个专门的io线程完成，dubbo会构建一个CompletableFuture，通过它阻塞当前线程去等待服务端返回结果，当服务器返回结果之后就会为CompletableFuture填充结果，释放阻塞的调用线程。
     + 异步调用，dubbo本身的调用就是异步的，通过AsyncToSyncInvoker将异步转成了同步，异步调用就是不去执行这段逻辑，为了顺利拿到结果回执（Future死循环，服务器返回结果，循环结束），在调用发起之后将回执填充到RpcContext中。
     + 并行调用，客户端并行发起多个调用，只要其中一个成功即可，某个服务异常直接忽略。根据forks数量挑选出服务节点；基于线程池并行发起远程调用；基于阻塞队列等待结果返回；第一个结果返回填充阻塞队列并释放线程。
     + 广播调用，遍历所有的提供者发起调用。
 
-+ dubbo的容错机制
++ dubbo的集群容错机制
     + failover cluster，失败自动切换，自动重试其他服务器（默认）
     + failfast cluster，快速失败，立即报错，只发起依次调用
-    + failsafe cluster，失败安全，出现异常时，直接忽略
-    + failback cluster，失败自动恢复，记录失败请求，定时重发
+    + failsafe cluster，失败安全，出现异常时，记录日志不抛出，返回空结果
+    + failback cluster，失败自动恢复，记录失败请求，返回空结果给consumer，定时重试
     + forking cluster，并行调用多个服务器，只要一个成功即返回
     + broadcast cluster，广播逐个调用所有提供者，任意一个报错则报错
 
@@ -385,6 +391,44 @@
     + hessian序列化比java序列化高效，生成的字节流更短
     + Java序列化会把要序列化的对象类的元数据和业务数据全部序列化成字流，而且是把整个继承关系上的东西全部序列化了。它序列化出来的字节流是对那个对象结构到内容的完全描述，包含所有的信息，因此效率较低而且字节流比较大。但是由于确实是序列化了所有内容，所以可以说什么都可以传输，因此也更可用和可靠。 而hessian序列化，它的实现机制是着重于数据，附带简单的类型信息的方法。
     + 就像Integer a = 1，hessian会序列化成I 1这样的流，I表示int or Integer，1就是数据内容。而对于复杂对象，通过Java的反射机制，hessian把对象所有的属性当成一个Map来序列化，产生类似M className propertyName1 I 1 propertyName S stringValue这样的流，包含了基本的类型描述和数据内容。而在序列化过程中，如果一个对象之前出现过，hessian会直接插入一个R index这样的块来表示一个引用位置，从而省去再次序列化和反序列化的时间。这样做的代价就是hessian需要对不同的类型进行不同的处理（因此hessian直接偷懒不支持short），而且遇到某些特殊对象还要做特殊的处理（比如StackTraceElement）。而且同时因为并没有深入到实现内部去进行序列化，所以在某些场合会发生一定的不一致，比如通过Collections.synchronizedMap得到的map。
+    
++ dubbo架构设计
+    + Proxy服务代理层，支持JDK动态代理，javassist等代理机制
+    + Registry注册中心层，支持Zookeeper，Redis等作为注册中心
+    + Protocol远程调用层，支持Dubbo，Http等调用协议
+    + Transport网络传输层，支持Netty，mina等网络传输框架
+    + Serialize数据序列化层，支持Json，Hessian等序列化机制
+    
++ dubbo和springCloud对比
+    + dubbo由于是二进制的传输，占用带宽更少
+    + springCloud是http传输协议，带宽占用更多，同时使用http协议一般会使用JSON报文，消耗更大
+    + dubbo开发难度大，原因是dubbo的jar包依赖问题
+    + springCloud的接口协议约定比较自由且松散，使用的是rest风格接口
+    + dubbo只是springCloud的一个子集，解决的是分布式中的服务调用问题，而springCloud提供了全套的解决方案
+   
++ dubbo是如何完成服务导出的
+    + 首先dubbo会将@DubboService注解或者@Service注解进行解析得到服务参数，包括服务名，服务接口，服务超时时间，服务协议，得到一个ServiceBean
+    + 然后调用ServiceBean的export方法进行服务导出
+    + 然后将服务信息注册到注册中心，如果有多个协议，多个注册中心，那么会将服务按单个协议，单个注册中心进行注册
+    + 将服务注册到注册中心后，还会绑定一些监听器，监听动态配置中心的变更
+    + 根据服务协议启动对应的web服务器或网络框架，比如tomcat，Netty等
+    
++ dubbo是如何完成服务引入的
+    + 使用@Reference注解来引入一个服务，dubbo会将注解和服务的信息解析出来，得到当前引用的服务名，服务接口
+    + 然后从注册中心查询服务信息，得到服务提供者信息，并存在消费端的服务目录中
+    + 并绑定一些监听器来监听动态配置中心的变更
+    + 根据查询到的服务提供者信息生成一个服务接口的代理对象，并放入Spring容器中作为Bean
+    
++ dubbo支持的协议
+    + dubbo协议：采用NIO复用单一长连接，并使用线程池并发处理请求，减少握手和加大并发效率，性能较好。大文件上传可能会出现问题
+    + RMI协议：JDK自带功能，可与原生RMI互操作，基于TCP协议，短链接
+    + Hessian协议(RPC框架，需要服务器，dubbo自带Jetty提供Servlet)：基于HTTP协议，对于数据包较大的情况比较友好，需要Hessian.jar，Http短链接开销大，出入参需要Serializable接口
+    + http协议
+    + Thrif：RPC框架，二进制，跨语言，跨平台
+    
+
+    
+    
 
 
 + Jackson序列化：所有被public修饰的字段->所有被public修饰的getter->所有被public修饰的setter。 字段都是private的，所以无法识别。而 getter识别的时候无法却分首字母是大写还是小写，所以jackson统一用java的规范假设成小写。
