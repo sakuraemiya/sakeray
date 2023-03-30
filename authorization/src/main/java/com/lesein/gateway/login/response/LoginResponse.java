@@ -1,4 +1,4 @@
-package com.lesein.authorization.login.response;
+package com.lesein.gateway.login.response;
 
 import java.io.Serializable;
 

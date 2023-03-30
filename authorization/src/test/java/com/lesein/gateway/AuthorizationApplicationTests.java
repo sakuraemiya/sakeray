@@ -1,4 +1,4 @@
-package com.lesein.authorization;
+package com.lesein.gateway;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
