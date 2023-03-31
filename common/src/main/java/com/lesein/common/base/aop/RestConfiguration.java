@@ -6,8 +6,8 @@ import java.lang.annotation.*;
  * @author WangJie
  * @date 2023/3/29
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE, ElementType.METHOD})
 @Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE})
 public @interface RestConfiguration {
 }

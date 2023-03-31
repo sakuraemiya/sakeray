@@ -1,8 +1,8 @@
-package com.lesein.gateway.login.controller;
+package com.lesein.authorization.login.api;
 
-import com.lesein.gateway.login.request.LoginRequest;
-import com.lesein.gateway.login.response.LoginResponse;
-import com.lesein.gateway.login.service.LoginService;
+import com.lesein.authorization.login.request.LoginRequest;
+import com.lesein.authorization.login.response.LoginResponse;
+import com.lesein.authorization.login.service.LoginService;
 import com.lesein.common.base.aop.RestConfiguration;
 import com.lesein.common.base.response.BaseResponse;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,7 +19,7 @@ import javax.annotation.Resource;
 @RequestMapping("/auth")
 @RestController
 @RestConfiguration
-public class LoginController {
+public class LoginApi {
 
     @Resource
     private LoginService loginService;

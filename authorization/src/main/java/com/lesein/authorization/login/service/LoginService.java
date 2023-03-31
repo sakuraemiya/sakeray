@@ -1,7 +1,7 @@
-package com.lesein.gateway.login.service;
+package com.lesein.authorization.login.service;
 
-import com.lesein.gateway.login.request.LoginRequest;
-import com.lesein.gateway.login.response.LoginResponse;
+import com.lesein.authorization.login.request.LoginRequest;
+import com.lesein.authorization.login.response.LoginResponse;
 import com.lesein.common.base.util.ParamValidatorUtil;
 import org.springframework.stereotype.Component;
 

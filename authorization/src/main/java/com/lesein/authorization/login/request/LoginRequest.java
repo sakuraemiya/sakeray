@@ -1,4 +1,4 @@
-package com.lesein.gateway.login.request;
+package com.lesein.authorization.login.request;
 
 import com.lesein.common.base.request.BaseRequest;
 
