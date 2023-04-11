@@ -23,9 +23,9 @@ public class RestAspect {
         try {
             return proceedingJoinPoint.proceed();
         }catch (BusinessValidateException e){
-            return new BaseResponse(false,500,e.getMessage());
+            return new BaseResponse(false,500,null,e.getMessage());
         }catch (Throwable e){
-            return new BaseResponse(false,500,"系统异常");
+            return new BaseResponse(false,500,null,"系统异常");
         }
     }
 }

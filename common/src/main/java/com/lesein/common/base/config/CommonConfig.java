@@ -18,7 +18,7 @@ public class CommonConfig {
     }
 
     @Bean
-    public InitInterface getInitInterface(){
+    public InitInterface initInterface() {
         return new InitInterface();
     }
 }

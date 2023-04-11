@@ -10,21 +10,23 @@ import java.io.Serializable;
 public class BaseResponse<T> implements Serializable {
     private boolean success;
     private Integer code;
+    private String message;
     private T data;
 
 
-    public BaseResponse(boolean success, Integer code, T data) {
+    public BaseResponse(boolean success, Integer code, T data,String message) {
         this.success = success;
         this.code = code;
         this.data = data;
+        this.message=message;
     }
 
     public static <T> BaseResponse <T> setSuccessResponse(T data) {
-        return new BaseResponse(true, 200, data);
+        return new BaseResponse(true, 200, data,"操作成功");
     }
 
     public static <T> BaseResponse <T> setSuccessResponse() {
-        return new BaseResponse(true, 200, null);
+        return new BaseResponse(true, 200, null,"操作成功");
     }
 
 
@@ -52,6 +54,15 @@ public class BaseResponse<T> implements Serializable {
 
     public BaseResponse<T> setData(T data) {
         this.data = data;
+        return this;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public BaseResponse<T> setMessage(String message) {
+        this.message = message;
         return this;
     }
 }

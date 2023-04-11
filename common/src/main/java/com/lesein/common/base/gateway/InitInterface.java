@@ -1,76 +1,69 @@
 package com.lesein.common.base.gateway;
 
-import com.lesein.common.base.aop.RestConfiguration;
+import com.google.common.collect.Lists;
+import com.lesein.common.base.exception.BusinessValidateException;
 import com.lesein.common.base.gateway.entity.GatewayUrl;
-import com.lesein.common.base.util.CollectionUtil;
-import com.lesein.common.base.util.JacksonUtil;
-import org.reflections8.Reflections;
+import com.lesein.common.base.util.OkHttpUtil;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.maven.surefire.shade.org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.PostConstruct;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author WangJie
  * @date 2023/3/31
  */
-public class InitInterface {
+public class InitInterface implements ApplicationRunner {
 
     @Value("${spring.application.name}")
     private String id;
-    /**
-     * 支持扫描自定义包路径
-     */
-    @Value("${gateway.interface.scan.package:com.lesein}")
-    private String scanPackage;
 
-    @PostConstruct
-    private void init() {
-        initGateway();
-    }
+    @Autowired
+    private ApplicationContext applicationContext;
 
-    /**
-     * 初始化网关地址
-     */
-    private void initGateway(){
-        //扫描包下的所有类
-        Reflections reflections = new Reflections(scanPackage);
-        List<GatewayUrl> registerList = getRegisterList(reflections);
-        FileWriter myWriter = null;
-        try {
-            myWriter = new FileWriter("filename.txt");
-            myWriter.write(JacksonUtil.toJson(registerList));
-            myWriter.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * 获取真实网关地址
-     * @param reflections
-     * @return
-     */
-    private List<GatewayUrl> getRegisterList(Reflections reflections){
-        List<GatewayUrl> gatewayUrlLists = new ArrayList<>();
-        //获取包含RestConfiguration注解的所有类
-        Set<Class<?>> typesAnnotatedWith = reflections.getTypesAnnotatedWith(RestConfiguration.class);
-        if(CollectionUtil.isNotEmpty(typesAnnotatedWith)){
-            typesAnnotatedWith.forEach(clazz->{
-                Set<Method> methods = new HashSet<>(Arrays.asList(clazz.getDeclaredMethods()));
-                //过滤Object类自带的方法
-                methods.removeIf(method -> method.getDeclaringClass().equals(Object.class));
-                for(Method method:methods){
-                    GatewayUrl gatewayUrl=new GatewayUrl();
-                    gatewayUrl.setUniqueId(id);
-                    gatewayUrl.setPath("/" + clazz.getSimpleName() + "/" + method.getName());
-                    gatewayUrlLists.add(gatewayUrl);
+    @Override
+    public void run(ApplicationArguments args){
+        if(!Objects.equals(id,"gateway")){
+            List<GatewayUrl> registerList = new ArrayList<>();
+            Map<String, Object> beans = applicationContext.getBeansWithAnnotation(RestController.class);
+            for (Object bean : beans.values()) {
+                GatewayUrl gatewayUrl = new GatewayUrl();
+                gatewayUrl.setUniqueId(id);
+                Class<?> aClass = bean.getClass();
+                RequestMapping requestMapping = AnnotationUtils.findAnnotation(aClass, RequestMapping.class);
+                if (Objects.nonNull(requestMapping)) {
+                    String url = requestMapping.value()[0];
+                    if(StringUtils.isBlank(url)){
+                        throw new BusinessValidateException("项目启动失败，RequestMapping注解value值为空，类名为："+bean.getClass().getName());
+                    }
+                    if (url.startsWith("/")) {
+                        String regex = "^/.+$";
+                        if(!url.matches(regex)){
+                            throw new BusinessValidateException("项目启动失败，RequestMapping注解value值不合法，以/开头后面必须包含字符，类名为："+bean.getClass().getName());
+                        }
+                        gatewayUrl.setPath(url + "/**");
+                    } else {
+                        gatewayUrl.setPath("/" + url + "/**");
+                    }
+                }else {
+                    throw new BusinessValidateException("项目启动失败，RequestMapping注解缺失，类名为："+bean.getClass().getName());
                 }
-            });
+                registerList.add(gatewayUrl);
+            }
+            if(CollectionUtils.isNotEmpty(registerList)){
+                OkHttpUtil.postByJson("http://localhost:8763/gatewayUrlApi/addUrl", Lists.newArrayList(registerList), null);
+            }
         }
-        return gatewayUrlLists;
     }
 }
