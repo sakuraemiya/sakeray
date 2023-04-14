@@ -1,12 +1,11 @@
 package com.lesein.gateway.gatewayurl.request;
 
-import com.lesein.common.base.request.BaseRequest;
 
 /**
  * @author WangJie
  * @date 2023/4/11
  */
-public class GatewayUrlRequest extends BaseRequest {
+public class GatewayUrlRequest{
     /**
      * 项目id，一般为项目名称
      */

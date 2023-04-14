@@ -1,6 +1,8 @@
 package com.lesein.gateway.gatewayurl.service;
 
-import org.apache.commons.collections4.CollectionUtils;
+
+import com.lesein.common.base.response.BaseResponse;
+import com.lesein.common.base.util.JacksonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.gateway.filter.FilterDefinition;
@@ -34,7 +36,7 @@ public class GatewayUrlService {
      * @param request
      */
     public void addUrl(List<GatewayUrlRequest> request) {
-        if (CollectionUtils.isNotEmpty(request)) {
+        if (!request.isEmpty()) {
             request.forEach(item -> {
                 RouteDefinition definition = new RouteDefinition();
                 Map<String, String> predicateParams = new HashMap<>(8);

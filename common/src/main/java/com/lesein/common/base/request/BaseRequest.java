@@ -8,4 +8,14 @@ import java.io.Serializable;
  * 基础入参类
  */
 public class BaseRequest implements Serializable {
+    private Long userId;
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public BaseRequest setUserId(Long userId) {
+        this.userId = userId;
+        return this;
+    }
 }

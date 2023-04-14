@@ -1,6 +1,8 @@
 package com.lesein.authorization.login.service;
 
+import com.lesein.authorization.login.request.AnalysisRequest;
 import com.lesein.authorization.login.request.LoginRequest;
+import com.lesein.authorization.login.response.AnalysisResponse;
 import com.lesein.authorization.login.response.LoginResponse;
 import com.lesein.common.base.util.ParamValidatorUtil;
 import org.springframework.stereotype.Component;
@@ -24,8 +26,13 @@ public class LoginService {
         return response.setToken(request.getUserName() + "-" + request.getPassword());
     }
 
-
-    public void analysis(){
-
+    /**
+     * token解析
+     * @param request
+     */
+    public AnalysisResponse analysis(AnalysisRequest request){
+        AnalysisResponse response=new AnalysisResponse();
+        ParamValidatorUtil.checkNotBlank(request.getToken(), "token不能为空");
+        return response.setUserId(1L).setUserName(request.getToken().split("-")[0]).setPassword(request.getToken().split("-")[1]);
     }
 }

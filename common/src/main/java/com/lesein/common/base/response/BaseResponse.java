@@ -13,8 +13,10 @@ public class BaseResponse<T> implements Serializable {
     private String message;
     private T data;
 
+    public BaseResponse() {
+    }
 
-    public BaseResponse(boolean success, Integer code, T data,String message) {
+    public BaseResponse(boolean success, Integer code, T data, String message) {
         this.success = success;
         this.code = code;
         this.data = data;
@@ -27,6 +29,14 @@ public class BaseResponse<T> implements Serializable {
 
     public static <T> BaseResponse <T> setSuccessResponse() {
         return new BaseResponse(true, 200, null,"操作成功");
+    }
+
+    public static <T> BaseResponse <T> setErrorResponse(String message) {
+        return new BaseResponse(false, 500, null,message);
+    }
+
+    public static <T> BaseResponse <T> setErrorResponse() {
+        return new BaseResponse(false, 500, null,"系统异常");
     }
 
 
