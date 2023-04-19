@@ -1,7 +1,7 @@
-package com.lesein.gateway.gatewayurl.api;
+package com.lesein.gateway.url.api;
 
 import com.lesein.common.base.response.BaseResponse;
-import com.lesein.gateway.gatewayurl.request.GatewayUrlRequest;
+import com.lesein.gateway.url.request.GatewayUrlRequest;
 
 import java.util.List;
 

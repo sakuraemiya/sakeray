@@ -1,4 +1,4 @@
-package com.lesein.gateway.gatewayurl.request;
+package com.lesein.gateway.url.request;
 
 
 /**

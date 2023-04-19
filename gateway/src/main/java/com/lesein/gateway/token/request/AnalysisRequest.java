@@ -1,4 +1,4 @@
-package com.lesein.gateway.gatewaytoken.request;
+package com.lesein.gateway.token.request;
 
 import com.lesein.common.base.request.BaseRequest;
 

@@ -1,8 +1,6 @@
-package com.lesein.gateway.gatewayurl.service;
+package com.lesein.gateway.url.service;
 
 
-import com.lesein.common.base.response.BaseResponse;
-import com.lesein.common.base.util.JacksonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.gateway.filter.FilterDefinition;
@@ -10,7 +8,7 @@ import org.springframework.cloud.gateway.handler.predicate.PredicateDefinition;
 import org.springframework.cloud.gateway.route.RouteDefinition;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
-import com.lesein.gateway.gatewayurl.request.GatewayUrlRequest;
+import com.lesein.gateway.url.request.GatewayUrlRequest;
 
 import javax.annotation.Resource;
 import java.net.URI;

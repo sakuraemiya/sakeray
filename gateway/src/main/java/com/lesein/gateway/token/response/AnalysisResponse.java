@@ -1,4 +1,4 @@
-package com.lesein.gateway.gatewaytoken.response;
+package com.lesein.gateway.token.response;
 
 import java.io.Serializable;
 

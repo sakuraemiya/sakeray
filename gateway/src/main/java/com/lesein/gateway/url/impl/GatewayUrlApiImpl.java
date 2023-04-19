@@ -1,10 +1,10 @@
-package com.lesein.gateway.gatewayurl.impl;
+package com.lesein.gateway.url.impl;
 
 import com.lesein.common.base.aop.RestConfiguration;
 import com.lesein.common.base.response.BaseResponse;
-import com.lesein.gateway.gatewayurl.api.GatewayUrlApi;
-import com.lesein.gateway.gatewayurl.request.GatewayUrlRequest;
-import com.lesein.gateway.gatewayurl.service.GatewayUrlService;
+import com.lesein.gateway.url.api.GatewayUrlApi;
+import com.lesein.gateway.url.request.GatewayUrlRequest;
+import com.lesein.gateway.url.service.GatewayUrlService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;

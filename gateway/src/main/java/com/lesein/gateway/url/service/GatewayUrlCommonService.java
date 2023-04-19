@@ -1,4 +1,4 @@
-package com.lesein.gateway.gatewayurl.service;
+package com.lesein.gateway.url.service;
 
 
 import org.springframework.cloud.gateway.event.RefreshRoutesEvent;
