@@ -1,6 +1,5 @@
 package com.lesein.gateway.exception.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.lesein.common.base.response.BaseResponse;
 import com.lesein.common.base.util.JacksonUtil;
 import org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler;
@@ -9,19 +8,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.HttpMessageReader;
 import org.springframework.http.codec.HttpMessageWriter;
-import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.util.Assert;
 import org.springframework.web.reactive.function.BodyInserters;
-import org.springframework.web.reactive.function.server.RequestPredicates;
-import org.springframework.web.reactive.function.server.RouterFunctions;
-import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.reactive.result.view.ViewResolver;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author WangJie
@@ -44,11 +42,6 @@ public class GatewayExceptionService implements ErrorWebExceptionHandler {
      * ViewResolvers
      */
     private List<ViewResolver> viewResolvers = Collections.emptyList();
-
-    /**
-     * 存储处理异常后的信息
-     */
-    private ThreadLocal<Map<String, Object>> exceptionHandlerResult = new ThreadLocal<>();
 
     /**
      * 参考AbstractErrorWebExceptionHandler
