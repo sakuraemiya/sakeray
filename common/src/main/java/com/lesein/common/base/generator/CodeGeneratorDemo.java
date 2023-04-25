@@ -44,20 +44,19 @@ public class CodeGeneratorDemo {
     /**
      * 模块名
      */
-    private static final String moduleName = "test";
+    private static final String moduleName = "login";
 
     /**
      * 指定表，支持正则批量生成
      */
     private static final String[] tableNames = {
-            "tb_test"
+            "user_account"
     };
 
     /**
      * 指定表和实体名称，如果两者都填写，默认优先取上面数组
      */
     private static final Map<String, String> tableMap = ImmutableMap.<String, String>builder()
-            .put("tb_test", "Test")
             .build();
 
     public static void main(String[] args) {
@@ -92,10 +91,10 @@ public class CodeGeneratorDemo {
         mpg.setGlobalConfig(gc);
 
         // 数据源配置
-        DataSourceConfig dsc = new DataSourceConfig().setUrl("jdbc:mysql:")
+        DataSourceConfig dsc = new DataSourceConfig().setUrl("jdbc:mysql://localhost:3306/sakeray_authorization")
                 .setDriverName("com.mysql.jdbc.Driver")
                 .setUsername("root")
-                .setPassword("root")
+                .setPassword("sakeray")
                 .setDbType(DbType.MYSQL)
                 .setTypeConvert(new MySqlTypeConvert(){
 

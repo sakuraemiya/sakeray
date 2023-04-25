@@ -11,7 +11,7 @@ import com.lesein.common.base.generator.constant.NamingStrategyHelper;
 import com.lesein.common.base.generator.constant.StringPool;
 import com.lesein.common.base.generator.entity.TableField;
 import com.lesein.common.base.generator.entity.TableInfo;
-import org.apache.maven.surefire.shade.org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.sql.Connection;

@@ -1,7 +1,10 @@
 package com.lesein.gateway.exception.service;
 
+import com.lesein.common.base.aop.RestAspect;
 import com.lesein.common.base.response.BaseResponse;
 import com.lesein.common.base.util.JacksonUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler;
 import org.springframework.cloud.gateway.support.NotFoundException;
 import org.springframework.http.HttpStatus;
@@ -26,7 +29,7 @@ import java.util.Map;
  * @date 2023/4/19
  */
 public class GatewayExceptionService implements ErrorWebExceptionHandler {
-
+    private static final Logger log = LoggerFactory.getLogger(GatewayExceptionService.class);
 
     /**
      * MessageReader
@@ -71,6 +74,7 @@ public class GatewayExceptionService implements ErrorWebExceptionHandler {
         // 按照异常类型进行处理
         HttpStatus httpStatus;
         String body;
+        log.error("异常信息：", ex);
         if (ex instanceof NotFoundException) {
             httpStatus = HttpStatus.NOT_FOUND;
             body = "Service Not Found";

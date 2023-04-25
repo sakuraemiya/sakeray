@@ -7,16 +7,27 @@ import java.io.Serializable;
  * @date 2023/4/14
  */
 public class AnalysisResponse implements Serializable {
-    private Long userId;
-    private String userName;
-    private String password;
+    /**
+     * 主键
+     */
+    private Long id;
 
-    public Long getUserId() {
-        return userId;
+    /**
+     * 姓名
+     */
+    private String userName;
+
+    /**
+     * 手机号
+     */
+    private String userMobile;
+
+    public Long getId() {
+        return id;
     }
 
-    public AnalysisResponse setUserId(Long userId) {
-        this.userId = userId;
+    public AnalysisResponse setId(Long id) {
+        this.id = id;
         return this;
     }
 
@@ -29,12 +40,12 @@ public class AnalysisResponse implements Serializable {
         return this;
     }
 
-    public String getPassword() {
-        return password;
+    public String getUserMobile() {
+        return userMobile;
     }
 
-    public AnalysisResponse setPassword(String password) {
-        this.password = password;
+    public AnalysisResponse setUserMobile(String userMobile) {
+        this.userMobile = userMobile;
         return this;
     }
 }

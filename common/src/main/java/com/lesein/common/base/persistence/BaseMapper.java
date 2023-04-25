@@ -7,9 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author panzhi
- * @Description
- * @since 2020-11-11
+ * @author WangJie
+ * @date 2023/4/25
  */
 public interface BaseMapper<T> {
 

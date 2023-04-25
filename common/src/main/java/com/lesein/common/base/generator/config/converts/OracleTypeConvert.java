@@ -3,7 +3,8 @@ package com.lesein.common.base.generator.config.converts;
 
 import com.lesein.common.base.generator.config.rules.DbColumnType;
 import com.lesein.common.base.generator.config.rules.IColumnType;
-import org.apache.maven.surefire.shade.org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.StringUtils;
+
 
 import java.util.Objects;
 

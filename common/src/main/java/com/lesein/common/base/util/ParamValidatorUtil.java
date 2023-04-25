@@ -1,7 +1,7 @@
 package com.lesein.common.base.util;
 
 import com.lesein.common.base.exception.BusinessValidateException;
-import org.apache.maven.surefire.shade.org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author WangJie

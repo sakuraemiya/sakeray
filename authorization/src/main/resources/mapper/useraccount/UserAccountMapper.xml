@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lesein.authorization.login.dao.UserAccountMapper">
+
+	<!--BaseResultMap-->
+    <resultMap id="BaseResultMap" type="com.lesein.authorization.login.entity.UserAccount">
+        <!--@Table user_account-->
+		<id column="id" property="id" jdbcType="BIGINT"/>
+	    <result column="user_name" property="userName" jdbcType="VARCHAR"/>
+	    <result column="user_mobile" property="userMobile" jdbcType="VARCHAR"/>
+	    <result column="user_account" property="userAccount" jdbcType="VARCHAR"/>
+	    <result column="user_password" property="userPassword" jdbcType="VARCHAR"/>
+	    <result column="status" property="status" jdbcType="INTEGER"/>
+	    <result column="create_user_id" property="createUserId" jdbcType="VARCHAR"/>
+	    <result column="create_user_name" property="createUserName" jdbcType="VARCHAR"/>
+	    <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+	    <result column="update_user_id" property="updateUserId" jdbcType="VARCHAR"/>
+	    <result column="update_user_name" property="updateUserName" jdbcType="VARCHAR"/>
+	    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+	
+	<!--Base_Column_List-->
+	<sql id="Base_Column_List">
+			id
+			,user_name
+			,user_mobile
+			,user_account
+			,user_password
+			,status
+			,create_user_id
+			,create_user_name
+			,create_time
+			,update_user_id
+			,update_user_name
+			,update_time
+    </sql>
+
+	<!--批量插入-->
+	<insert id="insertList" parameterType="java.util.List">
+	    insert into user_account (
+                id
+			    ,user_name
+			    ,user_mobile
+			    ,user_account
+			    ,user_password
+			    ,status
+			    ,create_user_id
+			    ,create_user_name
+			    ,create_time
+			    ,update_user_id
+			    ,update_user_name
+			    ,update_time
+	    )
+	    values
+	    <foreach collection ="list" item="obj" separator =",">
+		    <trim prefix=" (" suffix=")" suffixOverrides=",">
+                        #{obj.id},
+                        #{obj.userName},
+                        #{obj.userMobile},
+                        #{obj.userAccount},
+                        #{obj.userPassword},
+                        #{obj.status},
+                        #{obj.createUserId},
+                        #{obj.createUserName},
+                        #{obj.createTime},
+                        #{obj.updateUserId},
+                        #{obj.updateUserName},
+                        #{obj.updateTime},
+		    </trim>
+	    </foreach>
+	</insert>
+
+	<!--按需新增-->
+	<insert id="insertPrimaryKeySelective" parameterType="com.lesein.authorization.login.entity.UserAccount">
+		insert into user_account
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="userName != null">
+				user_name,
+			</if>
+			<if test="userMobile != null">
+				user_mobile,
+			</if>
+			<if test="userAccount != null">
+				user_account,
+			</if>
+			<if test="userPassword != null">
+				user_password,
+			</if>
+			<if test="status != null">
+				status,
+			</if>
+			<if test="createUserId != null">
+				create_user_id,
+			</if>
+			<if test="createUserName != null">
+				create_user_name,
+			</if>
+			<if test="createTime != null">
+				create_time,
+			</if>
+			<if test="updateUserId != null">
+				update_user_id,
+			</if>
+			<if test="updateUserName != null">
+				update_user_name,
+			</if>
+			<if test="updateTime != null">
+				update_time,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+                #{id,jdbcType=BIGINT},
+			</if>
+			<if test="userName != null">
+                #{userName,jdbcType=VARCHAR},
+			</if>
+			<if test="userMobile != null">
+                #{userMobile,jdbcType=VARCHAR},
+			</if>
+			<if test="userAccount != null">
+                #{userAccount,jdbcType=VARCHAR},
+			</if>
+			<if test="userPassword != null">
+                #{userPassword,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+                #{status,jdbcType=INTEGER},
+			</if>
+			<if test="createUserId != null">
+                #{createUserId,jdbcType=VARCHAR},
+			</if>
+			<if test="createUserName != null">
+                #{createUserName,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateUserId != null">
+                #{updateUserId,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUserName != null">
+                #{updateUserName,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+		</trim>
+	</insert>
+
+	<!-- 按需修改-->
+	<update id="updatePrimaryKeySelective" parameterType="com.lesein.authorization.login.entity.UserAccount">
+		update user_account
+		<set>
+			<if test="userName != null">
+	            user_name = #{userName,jdbcType=VARCHAR},
+			</if>
+			<if test="userMobile != null">
+	            user_mobile = #{userMobile,jdbcType=VARCHAR},
+			</if>
+			<if test="userAccount != null">
+	            user_account = #{userAccount,jdbcType=VARCHAR},
+			</if>
+			<if test="userPassword != null">
+	            user_password = #{userPassword,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+	            status = #{status,jdbcType=INTEGER},
+			</if>
+			<if test="createUserId != null">
+	            create_user_id = #{createUserId,jdbcType=VARCHAR},
+			</if>
+			<if test="createUserName != null">
+	            create_user_name = #{createUserName,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+	            create_time = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateUserId != null">
+	            update_user_id = #{updateUserId,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUserName != null">
+	            update_user_name = #{updateUserName,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null">
+	            update_time = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		where id = #{id,jdbcType=BIGINT}
+	</update>
+
+	<!-- 按需批量修改-->
+	<update id="updateBatchByIds" parameterType="java.util.List">
+		update user_account
+		<trim prefix="set" suffixOverrides=",">
+			<trim prefix="user_name=case" suffix="end,">
+				<foreach collection="list" item="obj" index="index">
+					<if test="obj.userName != null">
+                        when id = #{obj.id}
+                        then  #{obj.userName,jdbcType=VARCHAR}
+					</if>
+				</foreach>
+			</trim>
+			<trim prefix="user_mobile=case" suffix="end,">
+				<foreach collection="list" item="obj" index="index">
+					<if test="obj.userMobile != null">
+                        when id = #{obj.id}
+                        then  #{obj.userMobile,jdbcType=VARCHAR}
+					</if>
+				</foreach>
+			</trim>
+			<trim prefix="user_account=case" suffix="end,">
+				<foreach collection="list" item="obj" index="index">
+					<if test="obj.userAccount != null">
+                        when id = #{obj.id}
+                        then  #{obj.userAccount,jdbcType=VARCHAR}
+					</if>
+				</foreach>
+			</trim>
+			<trim prefix="user_password=case" suffix="end,">
+				<foreach collection="list" item="obj" index="index">
+					<if test="obj.userPassword != null">
+                        when id = #{obj.id}
+                        then  #{obj.userPassword,jdbcType=VARCHAR}
+					</if>
+				</foreach>
+			</trim>
+			<trim prefix="status=case" suffix="end,">
+				<foreach collection="list" item="obj" index="index">
+					<if test="obj.status != null">
+                        when id = #{obj.id}
+                        then  #{obj.status,jdbcType=INTEGER}
+					</if>
+				</foreach>
+			</trim>
+			<trim prefix="create_user_id=case" suffix="end,">
+				<foreach collection="list" item="obj" index="index">
+					<if test="obj.createUserId != null">
+                        when id = #{obj.id}
+                        then  #{obj.createUserId,jdbcType=VARCHAR}
+					</if>
+				</foreach>
+			</trim>
+			<trim prefix="create_user_name=case" suffix="end,">
+				<foreach collection="list" item="obj" index="index">
+					<if test="obj.createUserName != null">
+                        when id = #{obj.id}
+                        then  #{obj.createUserName,jdbcType=VARCHAR}
+					</if>
+				</foreach>
+			</trim>
+			<trim prefix="create_time=case" suffix="end,">
+				<foreach collection="list" item="obj" index="index">
+					<if test="obj.createTime != null">
+                        when id = #{obj.id}
+                        then  #{obj.createTime,jdbcType=TIMESTAMP}
+					</if>
+				</foreach>
+			</trim>
+			<trim prefix="update_user_id=case" suffix="end,">
+				<foreach collection="list" item="obj" index="index">
+					<if test="obj.updateUserId != null">
+                        when id = #{obj.id}
+                        then  #{obj.updateUserId,jdbcType=VARCHAR}
+					</if>
+				</foreach>
+			</trim>
+			<trim prefix="update_user_name=case" suffix="end,">
+				<foreach collection="list" item="obj" index="index">
+					<if test="obj.updateUserName != null">
+                        when id = #{obj.id}
+                        then  #{obj.updateUserName,jdbcType=VARCHAR}
+					</if>
+				</foreach>
+			</trim>
+			<trim prefix="update_time=case" suffix="end,">
+				<foreach collection="list" item="obj" index="index">
+					<if test="obj.updateTime != null">
+                        when id = #{obj.id}
+                        then  #{obj.updateTime,jdbcType=TIMESTAMP}
+					</if>
+				</foreach>
+			</trim>
+		</trim>
+		where
+		<foreach collection="list" separator="or" item="obj" index="index" >
+			id = #{obj.id}
+		</foreach>
+	</update>
+
+	<!-- 删除-->
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+		delete from user_account
+		where id = #{id,jdbcType=BIGINT}
+	</delete>
+
+	<!-- 查询详情 -->
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from user_account
+	    where id = #{id,jdbcType=BIGINT}
+    </select>
+
+	<!-- 按需查询 -->
+	<select id="selectByPrimaryKeySelective" resultMap="BaseResultMap" parameterType="com.lesein.authorization.login.entity.UserAccount">
+		select
+		<include refid="Base_Column_List"/>
+		from user_account
+		<include refid="whereSql"/>
+		order by id desc
+	</select>
+
+    <!-- 批量查询-->
+    <select id="selectByIds" resultMap="BaseResultMap" parameterType="java.util.List">
+        <if test="ids != null and ids.size() > 0">
+            select
+            <include refid="Base_Column_List"/>
+            from user_account
+            <where>
+			    and id in
+                <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
+				#{item}
+                </foreach>
+            </where>
+            order by id desc
+        </if>
+	</select>
+
+	<!-- 根据条件查询 -->
+	<select id="selectByMap" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select
+		<include refid="Base_Column_List"/>
+		from user_account
+		order by id desc
+	</select>
+
+	<select id="selectByAccountAndStatus" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List"/>
+		from user_account where user_account=#{userAccount,jdbcType=VARCHAR} and status=#{status,jdbcType=INTEGER}
+	</select>
+
+	<sql id="whereSql">
+		<!--@sql select * from user_account -->
+		<where>
+			<if test="status != null">
+				and status=#{status,jdbcType=INTEGER}
+			</if>
+			<if test="userAccount != null and userAccount != ''">
+				and user_account=#{userAccount,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</sql>
+
+    <sql id="pageWhereSql">
+        <!--@sql select * from user_account -->
+        <where>
+        </where>
+    </sql>
+    
+</mapper>

@@ -2,20 +2,25 @@ package com.lesein.authorization.login.request;
 
 import com.lesein.common.base.request.BaseRequest;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 /**
  * @author WangJie
  * @date 2023/3/29
  */
 public class LoginRequest extends BaseRequest {
-    private String userName;
+    @NotBlank(message = "账号" + notBlankMsg)
+    private String accountName;
+    @NotBlank(message = "密码" + notBlankMsg)
     private String password;
 
-    public String getUserName() {
-        return userName;
+    public String getAccountName() {
+        return accountName;
     }
 
-    public LoginRequest setUserName(String userName) {
-        this.userName = userName;
+    public LoginRequest setAccountName(String accountName) {
+        this.accountName = accountName;
         return this;
     }
 

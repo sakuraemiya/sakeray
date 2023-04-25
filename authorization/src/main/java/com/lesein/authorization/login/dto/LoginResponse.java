@@ -1,4 +1,4 @@
-package com.lesein.authorization.login.response;
+package com.lesein.authorization.login.dto;
 
 import java.io.Serializable;
 

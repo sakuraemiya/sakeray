@@ -6,7 +6,7 @@ import com.lesein.common.base.exception.BusinessValidateException;
 import com.lesein.common.base.response.OkHttpClientResult;
 import okhttp3.*;
 import org.apache.commons.collections4.MapUtils;
-import org.apache.maven.surefire.shade.org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

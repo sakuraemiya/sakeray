@@ -1,6 +1,7 @@
 package com.lesein.common.base.generator.constant;
 
-import org.apache.maven.surefire.shade.org.apache.commons.lang3.StringUtils;
+
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
 

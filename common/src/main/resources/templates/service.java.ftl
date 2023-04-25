@@ -102,7 +102,7 @@ public class ${serviceClass} extends ${superServiceClass}<${daoClass}, ${entityC
 	</#if>
 		${entityClass} entity = new ${entityClass}();
 		BeanUtils.copyProperties(request, entity);
-        entity.setId(IdGenerator.getId(${entityClass}.class.getName()));
+        entity.setId(new IdGeneratorUtil().nextId());
         baseMapper.insertPrimaryKeySelective(entity);
 	}
 

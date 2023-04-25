@@ -3,14 +3,14 @@ package com.lesein.common.base.persistence;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
 /**
- * @author panzhi
- * @Description 实现类（ 泛型说明：M 是 mapper 对象，T 是实体）
- * @since 2020-11-11
+ * @author WangJie
+ * @date 2023/4/25
  */
 public abstract class BaseService<M extends BaseMapper<T>, T> {
 

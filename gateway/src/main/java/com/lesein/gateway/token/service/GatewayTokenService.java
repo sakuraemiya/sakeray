@@ -1,9 +1,7 @@
 package com.lesein.gateway.token.service;
 
 import com.alibaba.fastjson.JSONObject;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import com.lesein.common.base.response.BaseResponse;
 import com.lesein.common.base.util.OkHttpUtil;
@@ -18,7 +16,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.codec.HttpMessageReader;
 import org.springframework.http.server.reactive.ServerHttpRequestDecorator;
-import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserter;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -45,13 +42,20 @@ public class GatewayTokenService implements GlobalFilter {
     /**
      * 排除不需要鉴权的url
      */
-    private static final List<String> EXCLUDE_URLS = Lists.newArrayList("/authorization/auth/authorization");
+    private static final List<String> TOKEN_EXCLUDE_URLS = Lists.newArrayList("/auth/authorization");
+    /**
+     * 排除不需要经过gateway转发的url
+     */
+    private static final List<String> FORWARD_EXCLUDE_URLS=Lists.newArrayList("/auth/analysis");
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         String token = exchange.getRequest().getHeaders().getFirst("token");
         String currentUrl = exchange.getRequest().getURI().getPath();
-        if (!EXCLUDE_URLS.contains(currentUrl)) {
+        if(FORWARD_EXCLUDE_URLS.contains(currentUrl)){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "url未找到");
+        }
+        if (!TOKEN_EXCLUDE_URLS.contains(currentUrl)) {
             if (token == null || "".equals(token)) {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "登录失效");
             }
@@ -68,7 +72,9 @@ public class GatewayTokenService implements GlobalFilter {
             Mono<String> modifiedBody = serverRequest.bodyToMono(String.class)
                     .flatMap(body -> {
                         JSONObject jsonObject = JSONObject.parseObject(body);
-                        jsonObject.put("userId", data.getUserId());
+                        jsonObject.put("userId", data.getId());
+                        jsonObject.put("userName",data.getUserName());
+                        jsonObject.put("userMobile",data.getUserMobile());
                         return Mono.just(jsonObject.toJSONString());
                     });
             BodyInserter bodyInserter = BodyInserters.fromPublisher(modifiedBody, String.class);

@@ -16,6 +16,14 @@ public class BaseRequest implements Serializable {
      */
     private Long userId;
     /**
+     * 用户名
+     */
+    private String userName;
+    /**
+     * 用户手机号
+     */
+    private String userMobile;
+    /**
      * 页数
      */
     @Min(value = 0, message = "页码必须大于等于0的整数")
@@ -89,6 +97,24 @@ public class BaseRequest implements Serializable {
 
     public BaseRequest setLimit(Integer limit) {
         this.limit = limit;
+        return this;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public BaseRequest setUserName(String userName) {
+        this.userName = userName;
+        return this;
+    }
+
+    public String getUserMobile() {
+        return userMobile;
+    }
+
+    public BaseRequest setUserMobile(String userMobile) {
+        this.userMobile = userMobile;
         return this;
     }
 }

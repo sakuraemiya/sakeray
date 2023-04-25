@@ -12,7 +12,7 @@ import com.lesein.common.base.generator.entity.TableInfo;
 import com.lesein.common.base.request.BaseRequest;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
-import org.apache.maven.surefire.shade.org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
