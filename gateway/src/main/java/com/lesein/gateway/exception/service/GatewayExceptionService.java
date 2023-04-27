@@ -74,8 +74,8 @@ public class GatewayExceptionService implements ErrorWebExceptionHandler {
         // 按照异常类型进行处理
         HttpStatus httpStatus;
         String body;
-        log.error("异常信息：", ex);
         if (ex instanceof NotFoundException) {
+            log.error("异常信息：", ex);
             httpStatus = HttpStatus.NOT_FOUND;
             body = "Service Not Found";
         } else if (ex instanceof ResponseStatusException) {
@@ -83,6 +83,7 @@ public class GatewayExceptionService implements ErrorWebExceptionHandler {
             httpStatus = responseStatusException.getStatus();
             body = responseStatusException.getReason();
         } else {
+            log.error("异常信息：", ex);
             httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
             body = "Internal Server Error";
         }

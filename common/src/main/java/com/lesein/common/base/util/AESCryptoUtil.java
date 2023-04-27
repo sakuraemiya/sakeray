@@ -67,16 +67,6 @@ public class AESCryptoUtil {
 
 
     private static Key getKey(String keySeed) {
-        if (keySeed == null) {
-            keySeed = System.getenv("AES_SYS_KEY");
-        }
-        if (keySeed == null) {
-            keySeed = System.getProperty("AES_SYS_KEY");
-        }
-        if (keySeed == null || keySeed.trim().length() == 0) {
-            // 默认种子
-            keySeed = "abcd1234!@#$";
-        }
         try {
             SecureRandom secureRandom = SecureRandom.getInstance("SHA1PRNG");
             secureRandom.setSeed(keySeed.getBytes());

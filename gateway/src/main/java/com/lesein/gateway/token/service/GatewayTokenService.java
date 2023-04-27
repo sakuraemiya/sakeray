@@ -30,6 +30,7 @@ import reactor.core.publisher.Mono;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author WangJie
@@ -67,6 +68,9 @@ public class GatewayTokenService implements GlobalFilter {
             BaseResponse<AnalysisResponse> baseResponse = OkHttpUtil.postByJson("http://localhost:8762/auth/analysis", analysisRequest, header, new TypeReference<BaseResponse<AnalysisResponse>>() {
             });
             AnalysisResponse data = baseResponse.getData();
+            if(Objects.isNull(data)){
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "登录失效");
+            }
             //获取requestBody，并增加从token中解析的数据
             ServerRequest serverRequest = ServerRequest.create(exchange, HTTP_MESSAGE_READERS);
             Mono<String> modifiedBody = serverRequest.bodyToMono(String.class)
